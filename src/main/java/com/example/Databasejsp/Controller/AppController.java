@@ -3,11 +3,12 @@ package com.example.Databasejsp.Controller;
 import com.example.Databasejsp.Entity.Student;
 import com.example.Databasejsp.Entity.User;
 import com.example.Databasejsp.Service.AppService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+
 
 @Controller
 public class AppController {
@@ -27,7 +28,7 @@ public class AppController {
         if (logout != null) {
             model.addAttribute("message", "You have been logged out successfully!");
         }
-        return "login"; // loads login.jsp
+        return "views/login"; // loads login.jsp
     }
 
     @PostMapping("/login")
@@ -35,17 +36,19 @@ public class AppController {
                         @RequestParam("password") String password,
                         Model model) {
         try {
-            User user = appService.saveOrLoginUser(username, password);
-            return "redirect:/home";
+            User user = appService.validateUser(username, password);
+            model.addAttribute("username", user.getUsername()); // Pass username to home.jsp
+            return "views/home"; // ✅ Go to home.jsp
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", "Invalid username or password!");
-            return "login";
+            return "views/login"; // ❌ Stay on login.jsp
         }
     }
 
+
     @GetMapping("/home")
     public String showHomePage() {
-        return "home"; // loads home.jsp
+        return "views/home"; // loads home.jsp
     }
 
     @GetMapping("/logout")
@@ -58,14 +61,14 @@ public class AppController {
     @GetMapping("/students")
     public String listStudents(Model model) {
         model.addAttribute("students", appService.getAllStudents());
-        return "Student"; // JSP file: /WEB-INF/views/Student.jsp
+        return "views/Student"; // JSP file: /WEB-INF/views/Student.jsp
     }
 
     @GetMapping("/students/new")
     public String createStudentForm(Model model) {
         Student student = new Student();
         model.addAttribute("student", student);
-        return "create_student"; // JSP file: /WEB-INF/views/create_student.jsp
+        return "views/create_student"; // JSP file: /WEB-INF/views/create_student.jsp
     }
 
     @PostMapping("/students")
@@ -77,7 +80,7 @@ public class AppController {
     @GetMapping("/students/edit/{id}")
     public String editStudentForm(@PathVariable Long id, Model model) {
         model.addAttribute("student", appService.getStudentById(id));
-        return "edit_student"; // JSP file: /WEB-INF/views/edit_student.jsp
+        return "views/edit_student"; // JSP file: /WEB-INF/views/edit_student.jsp
     }
 
     @PostMapping("/students/{id}")
@@ -96,4 +99,5 @@ public class AppController {
         appService.deleteStudentById(id);
         return "redirect:/students";
     }
+   
 }

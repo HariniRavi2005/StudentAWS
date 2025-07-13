@@ -1,11 +1,9 @@
-package com.example.Databasejsp.impl;
+package com.example.Databasejsp.Service;
 
 import com.example.Databasejsp.Entity.Student;
 import com.example.Databasejsp.Entity.User;
 import com.example.Databasejsp.Repository.StudentRepository;
 import com.example.Databasejsp.Repository.UserRepository;
-import com.example.Databasejsp.Service.AppService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,17 +12,13 @@ import java.util.List;
 @Service
 public class AppServiceImpl implements AppService {
 
-    private final StudentRepository studentRepository;
-    private final UserRepository userRepository;
+    @Autowired
+    private StudentRepository studentRepository;
 
     @Autowired
-    public AppServiceImpl(StudentRepository studentRepository, UserRepository userRepository) {
-        this.studentRepository = studentRepository;
-        this.userRepository = userRepository;
-    }
+    private UserRepository userRepository;
 
     // =================== STUDENT METHODS ===================
-
     @Override
     public List<Student> getAllStudents() {
         return studentRepository.findAll();
@@ -37,9 +31,7 @@ public class AppServiceImpl implements AppService {
 
     @Override
     public Student getStudentById(Long id) {
-        return studentRepository.findById(id).orElseThrow(
-            () -> new IllegalArgumentException("Student not found with id: " + id)
-        );
+        return studentRepository.findById(id).orElseThrow(() -> new RuntimeException("Student not found"));
     }
 
     @Override
@@ -55,18 +47,18 @@ public class AppServiceImpl implements AppService {
     // =================== USER METHODS ===================
 
     @Override
-    public User saveOrLoginUser(String username, String password) {
-        User existingUser = userRepository.findByUsername(username);
-        if (existingUser != null) {
-            if (existingUser.getPassword().equals(password)) {
-                return existingUser; // Login successful
-            } else {
-                throw new IllegalArgumentException("Invalid password");
-            }
+    public User validateUser(String username, String password) {
+        User user = userRepository.findByUsername(username);
+        if (user != null && user.getPassword().equals(password)) {
+            return user;
         }
-        // Save new user
-        User newUser = new User(username, password);
-        return userRepository.save(newUser);
+        throw new IllegalArgumentException("Invalid username or password");
+    }
+
+
+    @Override
+    public User saveUser(User user) {
+        return userRepository.save(user);
     }
 
     @Override

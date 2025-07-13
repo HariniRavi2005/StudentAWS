@@ -15,6 +15,7 @@ public class DatabasejspApplication implements CommandLineRunner{
 		SpringApplication.run(DatabasejspApplication.class, args);
 	}
 	
+	
 	@Autowired
 	private StudentRepository studentRepository;
 

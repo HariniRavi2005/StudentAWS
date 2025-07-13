@@ -2,7 +2,6 @@ package com.example.Databasejsp.Service;
 
 import com.example.Databasejsp.Entity.Student;
 import com.example.Databasejsp.Entity.User;
-
 import java.util.List;
 
 public interface AppService {
@@ -21,9 +20,11 @@ public interface AppService {
 
     // =================== USER METHODS ===================
 
-    User saveOrLoginUser(String username, String password);
+    User validateUser(String username, String password); // ✅ login validation only
+
+    User saveUser(User user); // for registration (optional)
 
     User findByUsername(String username);
 
-    List<User> getAllUsers(); // renamed for clarity
+    List<User> getAllUsers();
 }
